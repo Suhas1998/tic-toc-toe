@@ -1,9 +1,13 @@
-import React from 'react';
+import React , {Component} from 'react';
 import './App.css';
+import fire from './service/Fire';
+import Game from './Game/Game'
 
-function App() {
+function App(){
   return (
-    <div>Game</div>
+    <div className="App">
+      <Game></Game>
+    </div>
   );
 }
 

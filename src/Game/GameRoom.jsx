@@ -1,6 +1,5 @@
 import React, {createRef, Component} from  'react'
 import { Modal } from 'react-bootstrap';
-import fbFunc from './../service/FirebaseDb'
 import firebase, { fauth } from "./../service/Fire.js"
 
 
@@ -26,8 +25,16 @@ class GameRoom extends Component{
     componentDidMount() {
         fauth.onAuthStateChanged((user) => {
             if (user) {
-            this.setState({ currUserId: user.uid });
+                this.setState({ currUserId: user.uid });
+                if(this.state.playerName === null){
+                    // Will have to retrieve it.
+                }else{
+                    firebase.database().ref('players/' + user.uid).set({
+                        "Name": this.state.playerName
+                    });
+                }
             } 
+            
         });
     }
 
@@ -58,6 +65,10 @@ class GameRoom extends Component{
                     this.props.onChange(this.state);
                 }
             })
+    } // Latter just remove the above part of continuous sending data to parent and use the below
+
+    passToParent= () => {
+        this.props.onChange(this.state)
     }
 
     showGameMenu = () => {
@@ -85,33 +96,40 @@ class GameRoom extends Component{
         console.log("Creating User")
         try {
             this.login()
+            this.hideNameMenu()
+            this.showMainMenu()
         } catch (error) {
             console.log("Creating the User: "+error)
         }
-        
-        console.log("usercreated: ")
-        this.hideNameMenu()
-        this.showMainMenu()
     }
 
     createRoom = (event) => {     
         if(this.state.currUserId !== null){
-            fbFunc.createGameRoom(this.state.currUserId)
+            var num = (new Date()).getTime()
+            firebase.database().ref('gameRooms/' + num ).set({
+                'player1': this.state.currUserId,
+                'player2': null
+            });
             this.hideMainMenu()
             this.showGameMenu()
+            this.passToParent()
         }else{
             console.log("Unable to create Room")
         }
-        
-        
     }
 
     joinRoom = (event) => {
         event.preventDefault()
-        console.log(this.state.playerName)
-        console.log(this.state.roomId)
-        this.hideMainMenu()
-        this.showGameMenu()
+        try {
+            var num = this.state.roomId
+            firebase.database().ref('gameRooms/' + num ).update({
+                'player2': this.state.currUserId
+            });
+            this.hideMainMenu()
+            this.showGameMenu()
+        } catch (error) {
+            console.log(error)
+        }   
     }
 
     render(){
@@ -162,7 +180,7 @@ class GameRoom extends Component{
                         <button className="btn btn-success" type="button">Join Room</button>
                     </Modal.Footer>
                 </Modal>
-                <button type="button" onClick={this.showNameMenu } className="btn btn-primary">
+                <button type="button" onClick={ (this.state.currUserId === null) ? this.showNameMenu: this.showMainMenu} className="btn btn-primary">
                     {this.inGame ? <>Exit Room</>:<>New Room</>}
                 </button>
             </>

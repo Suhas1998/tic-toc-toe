@@ -64,12 +64,8 @@ class Game extends Component {
         })
     };
 
-
-
     changeState = (data) => {
-        this.setState({
-            
-        })
+        console.log(data)
     }
 
     render(){

@@ -1,16 +1,18 @@
 
-import firebase from 'firebase';
+import firebase from 'firebase/app'
+require('firebase/auth')
 
-var firebaseConfig = {
-    apiKey: "AIzaSyAv30YsVW1oSnJbTMSVHKKPmg69zd4sLaU",
-    authDomain: "tic-tac-toe-e15a6.firebaseapp.com",
-    databaseURL: "https://tic-tac-toe-e15a6.firebaseio.com",
-    projectId: "tic-tac-toe-e15a6",
-    storageBucket: "tic-tac-toe-e15a6.appspot.com",
-    messagingSenderId: "644343342481",
-    appId: "1:644343342481:web:7f8643121bf9a0a9dde630"
-  };
+const firebaseConfig = {
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+  databaseURL: process.env.REACT_APP_FIREBASE_DATABASE_URL,
+  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_FIREBASE_SENDER_ID,
+  appId: process.env.REACT_APP_FIREBASE_APP_ID
+};
 
-var fire = firebase.initializeApp(firebaseConfig);
+firebase.initializeApp(firebaseConfig)
 
-export default fire;
+export const fauth = firebase.auth();
+export default firebase
